@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from api.serializers import RegisterSerializer, LoanSerializer, GetLoanSerializer
+from api.serializers import RegisterSerializer, LoanSerializer, GetLoanSerializer, GetCustomerLoansSerializer
 from api.models import CustomerModel, LoanModel
 from datetime import datetime
 from django.db.models import Sum
@@ -79,3 +79,11 @@ class GetLoanView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
     
+class GetCustomerLoansView(APIView):
+    def get(self, request, customer_id):
+        try:
+            loans = LoanModel.objects.filter(customer_id=customer_id)
+            serializer = GetCustomerLoansSerializer(loans, many=True)
+            return Response(serializer.data, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

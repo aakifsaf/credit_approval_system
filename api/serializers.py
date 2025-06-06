@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from api.models import CustomerModel, LoanModel
 from api.utils import check_loan_eligibility
+from datetime import datetime
+
 class RegisterSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     approved_limit = serializers.SerializerMethodField()
@@ -67,10 +69,15 @@ class GetLoanSerializer(serializers.ModelSerializer):
         fields = ['loan_id', 'customer', 'loan_amount', 'interest_rate', 'monthly_repayment', 'tenure']
 
 class GetCustomerLoansSerializer(serializers.ModelSerializer):
+    repayments_left = serializers.SerializerMethodField()
+    
+    def get_repayments_left(self, obj):
+        today = datetime.now()
+        return (obj.end_date - today).days // 30
     
     class Meta:
         model = LoanModel
-        fields = '__all__'
+        fields = ['loan_id', 'loan_amount', 'interest_rate', 'monthly_repayment', 'repayments_left']
 
 
 
