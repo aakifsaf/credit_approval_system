@@ -2,6 +2,7 @@ from rest_framework import serializers
 from api.models import CustomerModel, LoanModel
 from api.utils import check_loan_eligibility
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class RegisterSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -70,10 +71,22 @@ class GetLoanSerializer(serializers.ModelSerializer):
 
 class GetCustomerLoansSerializer(serializers.ModelSerializer):
     repayments_left = serializers.SerializerMethodField()
-    
+
     def get_repayments_left(self, obj):
-        today = datetime.now()
-        return (obj.end_date - today).days // 30
+        today = datetime.now().date()
+        start_date = obj.start_date
+        tenure = obj.tenure
+        end_date = start_date + relativedelta(months=tenure)
+
+        if today < start_date:
+            return tenure
+
+        if today >= end_date:
+            return 0
+
+        delta = relativedelta(end_date, today)
+        return delta.years * 12 + delta.months
+    
     
     class Meta:
         model = LoanModel

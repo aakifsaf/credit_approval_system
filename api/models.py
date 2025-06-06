@@ -25,4 +25,4 @@ class LoanModel(models.Model):
     end_date = models.DateField(null=True, blank=True)
     
     def __str__(self):
-        return self.customer_id
+        return self.customer_id.first_name
