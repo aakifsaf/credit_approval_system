@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && gunicorn credit_approval_system.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+  db:
+    image: postgres:14
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: credit_approval_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 450506
+
+volumes:
+  postgres_data:
+
+
