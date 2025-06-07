@@ -10,4 +10,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app
 
-CMD ["gunicorn", "credit_approval_system.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["./wait_for_db.sh","gunicorn", "credit_approval_system.wsgi:application", "--bind", "0.0.0.0:8000"]

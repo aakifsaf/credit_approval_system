@@ -6,11 +6,10 @@ from django.db.models import Sum
 
 def check_loan_eligibility(customer_id, loan_amount, interest_rate, tenure):
     try:
+        customer = CustomerModel.objects.get(customer_id=customer_id)
         loan_amount = Decimal(str(loan_amount))
         interest_rate = Decimal(str(interest_rate))
         tenure = int(tenure)
-
-        customer = CustomerModel.objects.get(customer_id=customer_id)
         approved_limit = Decimal(str(customer.approved_limit))
         monthly_salary = Decimal(str(customer.monthly_salary))
 

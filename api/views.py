@@ -7,6 +7,7 @@ from datetime import datetime
 from django.db.models import Sum
 from decimal import Decimal
 from rest_framework import generics
+from .utils import check_loan_eligibility
 # Create your views here.
 
 class RegisterView(APIView):

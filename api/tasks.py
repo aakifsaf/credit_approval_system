@@ -4,24 +4,22 @@ from celery import shared_task
 from .models import CustomerModel, LoanModel
 
 @shared_task
-def ingest_customer_data(file_path):
+def ingest_customer_data():
     try:
-        df = pd.read_excel(file_path)
+        df = pd.read_excel("data/customer_data.xlsx")
 
         df = df.drop_duplicates(subset='Customer ID', keep='first')
 
         for _, row in df.iterrows():
             try:
-                CustomerModel.objects.update_or_create(
+                CustomerModel.objects.create(
                     customer_id=int(row['Customer ID']),
-                    defaults={
-                        'first_name': row['First Name'],
-                        'last_name': row['Last Name'],
-                        'age': row['Age'],
-                        'phone_number': str(row['Phone Number']),
-                        'monthly_salary': row['Monthly Salary'],
-                        'approved_limit': row['Approved Limit'],
-                    }
+                    first_name=row['First Name'],
+                    last_name=row['Last Name'],
+                    age=row['Age'],
+                    phone_number=str(row['Phone Number']),
+                    monthly_salary=row['Monthly Salary'],
+                    approved_limit=row['Approved Limit'],
                 )
             except IntegrityError as e:
                 print(f"⚠️ Skipped conflicting row: {row['Customer ID']} - {e}")
@@ -30,9 +28,9 @@ def ingest_customer_data(file_path):
         print(f"Error loading file: {e}")
 
 @shared_task
-def ingest_loan_data(file_path):
+def ingest_loan_data():
     try:
-        df = pd.read_excel(file_path)
+        df = pd.read_excel("data/loan_data.xlsx")
 
         for _, row in df.iterrows():
             try:
